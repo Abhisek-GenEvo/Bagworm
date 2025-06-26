@@ -1,0 +1,11 @@
+#Data filtering
+java -jar /home/Softwares/Trimmomatic-0.39/trimmomatic-0.39.jar PE WB_R1.fastq WB_R2.fastq wbT_R1_paired.fastq wbT_R1_unpaired.fastq wbT_R2_paired.fastq wbT_R2_unpaired.fastq ILLUMINACLIP:/home/Softwares/Trimmomatic-0.39/adapters/all_trueseq_PE.fa:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:4:20 MINLEN:60 -threads 15
+
+#Assembly
+/home/Softwares/trinityrnaseq-v2.14.0/Trinity --seqType fq --left wbT_R1_paired.fastq,wbT_R1_unpaired.fastq --right wbT_R2_paired.fastq,wbT_R2_unpaired.fastq --CPU 44 --max_memory 250G --output BW_Trinity_Assembly
+TrinityStats.pl
+
+#Gene expression analysis
+export PATH=/home/anaconda3/bin:$PATH
+kallisto index -i Crameri_cds.idx Eumeta_crameri_final_transcripts.fasta
+kallisto quant -i Crameri_cds.idx -o crameri_output_kallisto --plaintext wbT_R1_paired.fastq wbT_R2_paired.fastq -t 18

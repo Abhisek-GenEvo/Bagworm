@@ -1,7 +1,0 @@
-run.sh
-paste variable.txt fixed.txt | cut -f1,5,6,12,13 | sed 's/)://g' > concat_file_crameri.tab
-awk '{ if (($2 != "") || ($3 != "") || ($4 != "") || ($5 != "")) {a = $2-$4; print $1"\t"$3"\t"$5"\t"a}}' concat_file_crameri.tab > loglikelihood_crameri.tab
-perl chisq.pl loglikelihood_crameri.tab
-sed 's/ = /\t/g' file1 | sed 's/ \+/ /g' |  sed 's/ /\t/g' | cut -f1,7 > file2.txt
-Rscript script.R
-awk -F'\t' '{if ($3 < 0.01 ) {print $1"\t"$2"\t"$3}}' file2_adj.txt > selected_0.01_padj_crameri.txt

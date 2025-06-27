@@ -1,3 +1,5 @@
+#Orthogroups construction across six Lepidopterans were performed using the same method as used in species phylogenetic tree construction
+
 #Extracting the sites showing unique amino acid substitution
 ls *single | parallel -j 20 'python script_uniquesubs.py {}'
 ls *fasta > list_genes 

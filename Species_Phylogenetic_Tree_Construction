@@ -1,18 +1,1 @@
-#Orthogroups construction
-orthofinder -f ./input_files_dir/ -S diamond -t 40 -a 40
-#Extraction of fuzzy one-to-one orthogroups
-python2.7 /home/Softwares/kinfin/src/kinfin.py -p SpeciesIDs.txt -g Orthogroups.txt -c config_working.txt -o kinfin_BW_phylogeny -s SequenceIDs.txt -a ./fasta_files
-cut -f1 all.all.cluster_1to1s.txt > 1to1.txt
-grep -f 1to1.txt all.cluster_summary.txt > 1to1_all.txt
-sort -k4 1to1_all.txt > 1to1_all_sortedf4.txt
-head -1116 1to1_all_sortedf4.txt | tail -138 > 1to1_55species.txt
-cut -f1 1to1_55species.txt > 1to1_55speciesIDs.txt
-python2.7 /home/abhisek/Softwares/kinfin/scripts/get_protein_ids_from_cluster.py -g Orthogroups.txt --cluster_ids 1to1_55speciesIDs.txt
-python pick_longest_ortholog.py
-for i in ./138_Longest_Orthogroups/*; do cut -d"#" -f1,2 "$i" > "$i".fasta; done;
-#Orthogroups alignment
-parallel -j 10 '/home/vinit/SOFTWARES/anaconda3/bin/mafft {} > {/.}.einsi.faa' ::: ./138_Longest_Orthogroups_mod/*.fasta
-#Alignment trimming
-perl /mnt/HDD1/ABM/Orthofinder_final/BeforePhylo/BeforePhylo.pl -type=protein -conc=raxml -trim ./138_Longest_Orthogroups_alignment/*einsi.faa
-#Tree construction
-/home/anaconda3/bin/raxmlHPC-PTHREADS-SSE3 -m PROTGAMMAAUTO -f a -x 12345 -# 100 -T 28 -p 12345 -s output.phy.reduced -n Bw_55species_reduced_Tree_100bs
+

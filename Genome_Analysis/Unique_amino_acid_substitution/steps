@@ -1,9 +1,9 @@
 #Orthogroups construction across six Lepidopterans were performed using the same method as used in species phylogenetic tree construction
 #Alignment
-parallel -j 10 '/home/anaconda3/bin/mafft {} > {/.}.mafft.aln' ::: ./crameri_orthogroups/*.faa
+parallel -j 10 '/home/anaconda3/bin/mafft {} > {/.}.einsi.faa' ::: ./Orthogroups/*.fasta
 #Extracting the sites showing unique amino acid substitution
-ls *single | parallel -j 20 'python script_uniquesubs.py {}'
-ls *fasta > list_genes 
+ls *.fasta | parallel -j 20 'python script_uniquesubs.py {}'
+ls *.fasta > list_genes 
 sed -i 's/_phylo.mafft.aln.single.fasta//g' list_genes 
 for i in $(cat list_genes); do mv "$i"_phylo.mafft.aln.single.fasta "$i".fasta; done
 for i in $(cat list_genes); do mv "$i"_phylo.mafft.aln.single.subst "$i".subst; done

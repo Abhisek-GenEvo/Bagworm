@@ -1,0 +1,15 @@
+#Orthogroups construction across six Lepidopterans were performed using the same method as used in species phylogenetic tree construction
+
+parallel -j 20 '/home/anaconda3/bin/mafft {} > {/.}.mafft.aln' ::: ./orthogroups/*.faa
+for i in *.mafft.aln; do grep ">" "$i" > "$i".txt; done;
+parallel -j40 'grep --no-group-separator -A1 -wFf {} all_6species_nucl.fasta > {/.}.fasta' ::: ./*txt
+parallel -j 40 'pal2nal.pl {} {}.fasta -output fasta -nogap -nomismatch > {}_nuc.fasta' :::: list_genes
+for i in $(cat list_genes); do perl /DATA3/BW_abhisek_hard_disk/W_data/Fasta2Phylip.pl "$i".fasta ../phy_files_crameri/"$i".phy ; done
+#PAML folder
+mkdir FOLDER_crameri
+for i in $(cat list_genes); do mkdir FOLDER_crameri/"$i" ; done
+for i in $(cat list_genes); do sed 's/seq.phy/'$i'.phy/' fixed.ctl | sed 's/varfixed/'$i'_fixed/'  > FOLDER_crameri/"$i"/fixed.ctl ; done
+for i in $(cat list_genes); do sed 's/seq.phy/'$i'.phy/' variable.ctl | sed 's/varout/'$i'_variable/'  > FOLDER_crameri/"$i"/variable.ctl ; done
+for i in $(cat list_genes); do sed 's/[ \t]/     /g' ./phy_files_crameri/"$i".phy > FOLDER_crameri/"$i"/"$i".phy ; done
+for i in $(cat list_genes); do cp raxml_bipartition_reduced.txt FOLDER_crameri/"$i" ; done
+sh paml_crameri.sh

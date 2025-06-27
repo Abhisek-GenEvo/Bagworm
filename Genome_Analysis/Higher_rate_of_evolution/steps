@@ -1,9 +1,10 @@
 #Orthogroups construction across six Lepidopterans were performed using the same method as used in species phylogenetic tree construction
 #Alignment
 parallel -j 10 '/home/anaconda3/bin/mafft {} > {/.}.einsi.faa' ::: ./Orthogroups/*.fasta
-ls ./mafft_aligned_orthogroups/*.faa | nohup parallel -j 20 'perl Fasta2Phylip.pl {} {/.}.phy' &
+ls *.einsi.faa | nohup parallel -j 20 'perl Fasta2Phylip.pl {} {/.}.phy' &
 #Running RAxML for each orthogroup
-ls ./phy_files/*.phy | nohup parallel -j 20 '/home/anaconda3/bin/raxmlHPC-PTHREADS-SSE3 -m PROTGAMMAAUTO -f a -x 12345 -# 100 -p 12345 -s {} -n result.{/.}.phy' &
+ls *.phy | nohup parallel -j 20 '/home/anaconda3/bin/raxmlHPC-PTHREADS-SSE3 -m PROTGAMMAAUTO -f a -x 12345 -# 100 -p 12345 -s {} -n result.{/.}.phy' &
 ls RAxML_bestTree.result.* > all_orthogroups_best_tree.txt
+cp RAxML_bestTree.result.* ./raxml_best_tree
 #Extracting the genes with higher rate of evolution
 perl branchlength_genes.pl all_orthogroups_best_tree.txt 

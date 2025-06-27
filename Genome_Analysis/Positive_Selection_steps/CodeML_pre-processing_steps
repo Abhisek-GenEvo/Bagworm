@@ -1,8 +1,8 @@
 #Orthogroups construction across six Lepidopterans were performed using the same method as used in species phylogenetic tree construction
-
+#Alignment
+parallel -j 10 '/home/anaconda3/bin/mafft {} > {/.}.einsi.faa' ::: ./Orthogroups/*.fasta
 #Codon alignments
-parallel -j 20 '/home/anaconda3/bin/mafft {} > {/.}.mafft.aln' ::: ./orthogroups/*.faa
-for i in *.mafft.aln; do grep ">" "$i" > "$i".txt; done;
+for i in *.einsi.faa; do grep ">" "$i" > "$i".txt; done;
 parallel -j40 'grep --no-group-separator -A1 -wFf {} all_6species_nucl.fasta > {/.}.fasta' ::: ./*txt
 ls *.fasta > list_genes
 parallel -j 40 'pal2nal.pl {} {}.fasta -output fasta -nogap -nomismatch > {}_nuc.fasta' :::: list_genes

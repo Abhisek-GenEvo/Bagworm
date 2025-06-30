@@ -12,16 +12,20 @@ tigmint-cut -p46 -o draft.tigmint.fa pseudo2_output_EC.fasta draft.reads.molecul
 #Illumina assembly
 spades.py --only-assembler -1 EC_illumina_R1.fastq -2 EC_illumina_R2.fastq -s EC_illumina_unpaired.fastq -k 107 -t 68 -m 970 -o SPADES_output_EC_k107
 
-#Scaffolding of both assemblies
-platanus_allee consensus -c EC_assembly.fasta -IP1 BW_R1_paired.fastq BW_R2_paired.fastq -t 46 -o BW_platanus
-arcs-make arcs draft=BW_platanus_consensusScaffold_single reads=barcoded
-LINKS -f BW_arcs_scaffolded.fasta -s empty.fof -b BW_scaffolding_ont -l 5 -t 2 -a 0.3
+#Scaffolding both 10X Genomics and Illumina-based assemblies
+#Using Illumina data
+platanus_allee consensus -c EC_assembly.fasta -IP1 EC_illumina_R1.fastq EC_illumina_R2.fastq -t 46 -o EC_platanus 
+#Using 10X Genomics data
+arcs-make arcs draft=EC_platanus_consensusScaffold reads=barcoded_longranger 
+LINKS -f EC_arcs_scaffolded.fasta -s empty.fof -b EC_scaffolding_ont -l 5 -t 2 -a 0.3 
+#Using RNA-Seq data
 
 #Merging of the assemblies
-./quickmerge-0.3-pl526he1b5a44_0/bin/merge_wrapper.py agouti_10x.fasta agouti_Illumina_annot.fasta -l 38968 -ml 5000
+/home/Softwares/quickmerge-0.3-pl526he1b5a44_0/bin/merge_wrapper.py 10X_Genomics_scaffolded.fasta Illumina_scaffolded.fasta -l 38968 -ml 5000
 
 #Gap-closing
-GapCloser -b config.txt -a merged_out.fasta -l 155 -t 46 -o BW_merged_Illu_gapclosed.fasta
+config.txt file = 
+GapCloser -b config.txt -a Quickmerge_merged.fasta -l 155 -t 46 -o EC_assembly_gapclosed.fasta
 
 #Polishing 
 

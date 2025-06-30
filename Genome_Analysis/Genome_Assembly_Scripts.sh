@@ -16,14 +16,18 @@ java -jar /home/Softwares/Trimmomatic-0.39/trimmomatic-0.39.jar PE EC_Illumina_r
 #Assembly using SPAdes
 spades.py --only-assembler -1 EC_illumina_R1.fastq -2 EC_illumina_R2.fastq -s EC_illumina_unpaired.fastq -k 107 -t 68 -m 970 -o SPADES_output_EC_k107
 
-###################Scaffolding both 10X Genomics and Illumina-based assemblies
+###################Scaffolding both 10X Genomics-based and Illumina-based assemblies (Here, the commands are given for only Illumina-based assembly)
 #Using Illumina data
 platanus_allee consensus -c EC_assembly.fasta -IP1 EC_illumina_R1.fastq EC_illumina_R2.fastq -t 46 -o EC_platanus 
 #Using 10X Genomics data
 arcs-make arcs draft=EC_platanus_consensusScaffold reads=barcoded_longranger 
 LINKS -f EC_arcs_scaffolded.fasta -s empty.fof -b EC_scaffolding_ont -l 5 -t 2 -a 0.3 
 #Using RNA-Seq data
-
+/home/Softwares/augustus/bin/augustus --species=fly --gff3=on EC_scaffolding_ont.scaffolds.fa --outfile=augustus_EC_genome
+hisat2-build EC_scaffolding_ont.scaffolds.fa Genome_Index
+hisat2 -x Genome_Index -1 wbT_R1_paired.fastq -2 wbT_R2_paired.fastq -p 40 -S Illumina_Genome.sam
+samtools view -S Illumina_Genome.sam -b -o Illumina_Genome.bam -@ 40
+python2.7 /home/Softwares/AGOUTI/agouti.py scaffold -assembly EC_scaffolding_ont.scaffolds.fa -bam Illumina_Genome.bam -gff augustus_EC_genome.gff3 -outdir ./agouti_output
 
 ###################Merging of the assemblies
 /home/Softwares/quickmerge-0.3-pl526he1b5a44_0/bin/merge_wrapper.py 10X_Genomics_scaffolded.fasta Illumina_scaffolded.fasta -l 38968 -ml 5000
@@ -56,4 +60,4 @@ pilon -Xmx950G --genome EC_assembly_gapclosed.fasta --bam Pilon_EC_sorted.bam --
 
 ###################Filtering to keep the contigs >=5 Kb
 perl calc_length_separate.pl Pilon_output_EC.fasta 4999
-mv Pilon_output_EC.fasta.annot Final_EC_assembly.fasta
+mv Pilon_output_EC.fasta.filtered Final_EC_assembly.fasta

@@ -61,3 +61,30 @@ pilon -Xmx950G --genome EC_assembly_gapclosed.fasta --bam Pilon_EC_sorted.bam --
 ###################Filtering to keep the contigs >=5 Kb
 perl calc_length_separate.pl Pilon_output_EC.fasta 4999
 mv Pilon_output_EC.fasta.filtered Final_EC_assembly.fasta
+
+###################Genome assembly quality evaluation
+#Running QUAST
+python /home/Softwares/quast-5.2.0/quast.py --min-contig 0 Final_EC_assembly.fasta -t 60
+#Running BUSCO
+/home/Softwares/busco-5.4.4/bin/busco --config config.ini -m genome -i Final_EC_assembly.fasta --augustus --augustus_species fly -o EC_BUSCO_output -l Insecta_odb10
+
+###################Contamination removal from the assembly
+#Mapping the reads onto the genome
+bwa index Final_EC_assembly.fasta
+bwa mem -M Final_EC_assembly.fasta EC_illumina_R1.fastq EC_illumina_R2.fastq -o mapping_output.sam -t 40 
+/home/anaconda3/bin/samtools view -S mapping_output.sam -b -o mapping_output.bam -@ 40 
+/home/anaconda3/bin/samtools sort mapping_output.bam -o mapping_output_sorted.bam -@ 40 -m 9000000000 
+/home/anaconda3/bin/samtools index mapping_output_sorted.bam
+#Mapping the genome against NCBI-nt database
+/home/anaconda3/bin/blastn -db ./nt_database/nt -query Final_EC_assembly.fasta -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore" -max_target_seqs 10 -max_hsps 1 -evalue 1e-5 -num_threads 60 -out EC_blastn_for_blobtools
+#Running BlobTools
+conda activate blobtools2
+blobtools taxify -f EC_blastn_for_blobtools -m nucl_gb.accession2taxid -s 1 -t 2 -o EC_blastn_blobtools_taxified.out
+cut -f1,2,3 EC_blastn_blobtools_taxified.out > EC_blastn_blobtools_taxified_mod.out
+blobtools create -i Final_EC_assembly.fasta -b mapping_output_sorted.bam -t EC_blastn_blobtools_taxified_mod.out -o BlobTools_EC --nodes data/nodes.dmp --names data/names.dmp
+blobtools view -i BlobTools_EC.blobDB.json
+blobtools plot -i BlobTools_EC.blobDB.json
+
+###################Constructing a pseudochromosome-level genome assembly via genome-wide synteny alignment with Pachythelia villosella genome assembly (GenBank - GCA_964291025.1)
+export SATSUMA2_PATH=/home/vinit/SOFTWARES/satsuma2/bin/
+Chromosemble -q BW_Final_CLEAN_genome.fasta -t PacVill_nuclear_genome.fasta -o BW_pseudochromosomes -n 60

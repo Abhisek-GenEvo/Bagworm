@@ -3,7 +3,7 @@ supernova run --id=EC_assembly_output --sample=EC1,ec2,Ec3 --fastqs=EC_input1,EC
 supernova mkoutput --style=pseudohap2 --asmdir=EC_assembly_output/outs/assembly --outprefix=pseudo2_output_EC --minsize=0 --index
 #Processing of the barcoded reads for downstream usage
 longranger basic --id=longranger_out_EC --fastqs=/DATA/EC/EC_input1,/DATA/EC/EC_input2,/DATA/EC/EC_input3 --sample=EC1,ec2,Ec3 --localcores=36 --localmem=500
-#Correcting using Tigmint
+#Correction of the mis-assembly regions using Tigmint
 samtools faidx pseudo2_output_EC.fasta
 bwa index pseudo2_output_EC.fasta
 bwa mem -t46 -p -C pseudo2_output_EC.fasta /DATA/EC/longranger_out_EC/outs/barcoded.fastq.gz | samtools sort -@8 -tBX -o draft.reads.sortbx.bam
@@ -11,6 +11,9 @@ tigmint-molecule draft.reads.sortbx.bam | sort -k1,1 -k2,2n -k3,3n > draft.reads
 tigmint-cut -p46 -o draft.tigmint.fa pseudo2_output_EC.fasta draft.reads.molecule.bed
 
 ###################Illumina assembly
+#Data-filtration
+java -jar /home/Softwares/Trimmomatic-0.39/trimmomatic-0.39.jar PE EC_Illumina_raw_R1.fastq EC_Illumina_raw_R2.fastq EC_illumina_R1.fastq EC_illumina_R1_unpaired.fastq EC_illumina_R2.fastq EC_illumina_R2_unpaired.fastq ILLUMINACLIP:/home/Softwares/Trimmomatic-0.39/adapters/all_trueseq_PE.fa:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:4:20 MINLEN:60 -threads 15
+#Assembly using SPAdes
 spades.py --only-assembler -1 EC_illumina_R1.fastq -2 EC_illumina_R2.fastq -s EC_illumina_unpaired.fastq -k 107 -t 68 -m 970 -o SPADES_output_EC_k107
 
 ###################Scaffolding both 10X Genomics and Illumina-based assemblies

@@ -1,14 +1,19 @@
-#Orthogroups construction across six Lepidopterans were performed using the same method as used in species phylogenetic tree construction
-#Alignment
-parallel -j 10 '/home/anaconda3/bin/mafft {} > {/.}.einsi.faa' ::: ./Orthogroups/*.fasta
-#Codon alignments
+###################Orthogroups construction across six Lepidopterans were performed using the same method as used in species phylogenetic tree construction
+
+###################Alignment
+parallel -j 20 '/home/anaconda3/bin/mafft {} > {/.}.einsi.faa' ::: ./Orthogroups/*.fasta
+
+###################Conversion of protein alignments into corresponding codon alignments
+#Extracting the sequence IDs for each orthogroup
 for i in *.einsi.faa; do grep ">" "$i" > "$i".txt; done;
-parallel -j40 'grep --no-group-separator -A1 -wFf {} all_6species_nucl.fasta > {/.}.fasta' ::: ./*txt
+#Extracting the nucleotide sequences 
+parallel -j40 'grep --no-group-separator -A1 -wFf {} all_six_species_nucl.fasta > {/.}.fasta' ::: ./*txt
 ls *.fasta > list_genes
+#The codon alignments using PAL2NAL
 parallel -j 40 'pal2nal.pl {} {}.fasta -output fasta -nogap -nomismatch > {}_nuc.fasta' :::: list_genes
 for i in $(cat list_genes); do perl Fasta2Phylip.pl "$i".fasta ../phy_files/"$i".phy ; done
 
-#Data for running CodeML
+###################Data for running CodeML
 mkdir FOLDER
 for i in $(cat list_genes); do mkdir FOLDER/"$i" ; done
 for i in $(cat list_genes); do sed 's/seq.phy/'$i'.phy/' fixed.ctl | sed 's/varfixed/'$i'_fixed/'  > FOLDER/"$i"/fixed.ctl ; done
@@ -16,6 +21,6 @@ for i in $(cat list_genes); do sed 's/seq.phy/'$i'.phy/' variable.ctl | sed 's/v
 for i in $(cat list_genes); do sed 's/[ \t]/     /g' ./phy_files_crameri/"$i".phy > FOLDER/"$i"/"$i".phy ; done
 for i in $(cat list_genes); do cp raxml_bipartition_reduced.txt FOLDER/"$i" ; done
 
-#Run CodeML
+###################CodeML run (Branch-Site model)
 parallel -j 150 "cd FOLDER/{}/ ; /home/Softwares/paml4.9a/bin/codeml variable.ctl ; cd .. " :::: list_genes
 parallel -j 150 "cd FOLDER/{}/ ; /home/Softwares/paml4.9a/bin/codeml fixed.ctl ; cd .. " :::: list_genes

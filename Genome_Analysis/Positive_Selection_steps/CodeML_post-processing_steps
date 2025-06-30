@@ -1,13 +1,18 @@
-for j in FOLDER_crameri* ;
+###################Extracting the CodeML results from the output directories
+for j in FOLDER* ;
         do
         cd $j;
         for i in * ; do printf "$i\t" >> ../variable ; grep "lnL" "$i"/"$i"_variable.txt | sed 's/ \+/\t/g' >> ../variable; done;
         for i in * ; do printf "$i\t" >> ../fixed ; grep "lnL" "$i"/"$i"_fixed.txt | sed 's/ \+/\t/g' >> ../fixed; done ;
         cd ..;
         done
-paste variable.txt fixed.txt | cut -f1,5,6,12,13 | sed 's/)://g' > concat_file_crameri.tab
-awk '{ if (($2 != "") || ($3 != "") || ($4 != "") || ($5 != "")) {a = $2-$4; print $1"\t"$3"\t"$5"\t"a}}' concat_file_crameri.tab > loglikelihood_crameri.tab
-perl chisq.pl loglikelihood_crameri.tab
+
+###################Parsing the outputs
+paste variable.txt fixed.txt | cut -f1,5,6,12,13 | sed 's/)://g' > concat_file_EC.tab
+awk '{ if (($2 != "") || ($3 != "") || ($4 != "") || ($5 != "")) {a = $2-$4; print $1"\t"$3"\t"$5"\t"a}}' concat_file_EC.tab > loglikelihood_EC.tab
+perl chisq.pl loglikelihood_EC.tab
 sed 's/ = /\t/g' file1 | sed 's/ \+/ /g' |  sed 's/ /\t/g' | cut -f1,7 > file2.txt
 Rscript script.R
-awk -F'\t' '{if ($3 < 0.01 ) {print $1"\t"$2"\t"$3}}' file2_adj.txt > selected_0.01_padj_crameri.txt
+
+###################Extracting the genes with positive selection (FDR-corrected p < 0.01)
+awk -F'\t' '{if ($3 < 0.01 ) {print $1"\t"$2"\t"$3}}' file2_adj.txt > EC_selected_0.01_padj.txt

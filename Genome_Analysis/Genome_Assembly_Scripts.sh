@@ -24,10 +24,30 @@ LINKS -f EC_arcs_scaffolded.fasta -s empty.fof -b EC_scaffolding_ont -l 5 -t 2 -
 /home/Softwares/quickmerge-0.3-pl526he1b5a44_0/bin/merge_wrapper.py 10X_Genomics_scaffolded.fasta Illumina_scaffolded.fasta -l 38968 -ml 5000
 
 #Gap-closing
-config.txt file = 
 GapCloser -b config.txt -a Quickmerge_merged.fasta -l 155 -t 46 -o EC_assembly_gapclosed.fasta
+config.txt file format:
+#maximal read length
+max_rd_len=155
+[LIB]
+#average insert size
+avg_ins=350
+#if sequence needs to be reversed
+reverse_seq=0
+#in which part(s) the reads are used
+asm_flags=4
+#use only first 100 bps of each read
+rd_len_cutoff=150
+q1=EC_illumina_R1.fastq
+q2=EC_illumina_R2.fastq
+q=EC_illumina_unpaired.fastq
 
 #Polishing 
+bwa index EC_assembly_gapclosed.fasta
+bwa mem -t 70 -M EC_assembly_gapclosed.fasta EC_illumina_R1.fastq EC_illumina_R2.fastq -o Pilon_EC.sam
+samtools view -S Pilon_EC.sam -b -o Pilon_EC.bam -@ 70
+samtools sort Pilon_EC.bam -o Pilon_EC_sorted.bam -@ 70 -m 10000000000
+samtools index Pilon_EC_sorted.bam
+pilon -Xmx950G --genome EC_assembly_gapclosed.fasta --bam Pilon_EC_sorted.bam --output Pilon_output_EC --outdir Pilon_outdir --threads 70 --changes
 
 #Filtering to keep the contigs >=5 Kb
-perl calc_length_separate.pl Final_pilon3_output_bw_single.fasta 4999
+perl calc_length_separate.pl Pilon_output_EC.fasta 4999

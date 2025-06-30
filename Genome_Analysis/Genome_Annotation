@@ -1,19 +1,20 @@
 #Repeat Prediction
-/home/Softwares/RepeatModeler/BuildDatabase -engine ncbi -name DB_bw EC_Final_genome.fasta
-/home/Softwares/RepeatModeler/RepeatModeler -database DB_bw -engine ncbi -pa 18 -LTRStruct -ltr_retriever_dir /home/Softwares/LTR_retriever/ -ninja_dir /home/Softwares/NINJA-0.95-cluster_only/NINJA -mafft_dir /home/anaconda3/bin/
-/home/abhisek/RepeatMasker/RepeatMasker -lib ./consensi_classified_mod_single_annot.fasta BW_Final_genome.fasta -pa 18 -a
+/home/Softwares/RepeatModeler/BuildDatabase -engine ncbi -name DB_EC Final_EC_assembly.fasta
+/home/Softwares/RepeatModeler/RepeatModeler -database DB_EC -engine ncbi -pa 20 -LTRStruct -ltr_retriever_dir /home/Softwares/LTR_retriever/ -ninja_dir /home/Softwares/NINJA-0.95-cluster_only/NINJA -mafft_dir /home/anaconda3/bin/
+/home/abhisek/RepeatMasker/RepeatMasker -lib ./consensi_classified.fasta Final_EC_assembly.fasta -pa 20 -a
 
 #Coding gene prediction using MAKER
-/home/Softwares/maker/bin/maker -c 46 maker_opts.ctl maker_exe.ctl maker_bopts.ctl maker_evm.ctl -fix_nucleotides -genome BW_Final_genome_masked.fasta -RM_off -TMP ./tmp
+/home/Softwares/maker/bin/maker -c 40 maker_opts.ctl maker_exe.ctl maker_bopts.ctl maker_evm.ctl -fix_nucleotides -genome Final_EC_assembly.fasta.masked -RM_off -TMP ./tmp
 gff_merge
-grep ">" all_crameri_transcripts.fasta.single | sed 's/ /\t/g' | sed 's/AED://g' > all_crameri_transcripts_ids.txt
-awk -F'\t' '{if ($4 < 0.50 ) {print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"}}' all_crameri_transcripts_ids.txt | cut -f1 > selected_AED_ids_crameri.txt
-parallel -j20 'grep --no-group-separator -A1 -wFf {} all_crameri_transcripts.fasta.single > {/.}.faa' ::: selected_AED_ids_crameri_mod.txt
-perl calc_length_separate.pl selected_AED_ids_crameri_mod.faa 149
+grep ">" EC_transcripts.fasta | sed 's/ /\t/g' | sed 's/AED://g' > EC_transcripts_ids.txt
+awk -F'\t' '{if ($4 < 0.50 ) {print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"}}' EC_transcripts_ids.txt | cut -f1 > selected_AED_EC_ids.txt
+parallel -j20 'grep --no-group-separator -A1 -wFf {} EC_transcripts.fasta > {/.}.faa' ::: selected_AED_EC_ids.txt
+perl calc_length_separate.pl selected_AED_EC_ids.faa 149
+mv selected_AED_EC_ids.faa.annot EC_high_confidence_transcripts.fasta
 
 #Non-coding gene prediction
-/home/anaconda3/bin/tRNAscan-SE BW_Final_genome.fasta -o BW_tRNA_result -f BW_secondary -m BW_tRNA_stats --thread 18
-/home/anaconda3/bin/barrnap BW_Final_genome.fasta --kingdom euk --quiet --threads 18 --outseq BW_rRNA_Out
+/home/anaconda3/bin/tRNAscan-SE Final_EC_assembly.fasta -o EC_tRNA_result -f EC_secondary -m EC_tRNA_stats --thread 20
+/home/anaconda3/bin/barrnap Final_EC_assembly.fasta --kingdom euk --quiet --threads 20 --outseq EC_rRNA_Out
 
 makeblastdb 
-/home/anaconda3/bin/blastn -query mirGeneDb_Precursors.fasta -db BW_Final_genome.fasta -out mirGeneDB_BW_Blastn90 -evalue 0.000000001 -outfmt 6 -qcov_hsp_perc 90 -perc_identity 90 -num_threads 20
+/home/anaconda3/bin/blastn -query mirGeneDb_Precursors.fasta -db Final_EC_assembly.fasta -out mirGeneDB_EC_blastn -evalue 0.000000001 -outfmt 6 -qcov_hsp_perc 90 -perc_identity 90 -num_threads 20

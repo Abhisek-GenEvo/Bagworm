@@ -1,5 +1,5 @@
 #Repeat Prediction
-/home/Softwares/RepeatModeler/BuildDatabase -engine ncbi -name DB_bw BW_Final_genome.fasta
+/home/Softwares/RepeatModeler/BuildDatabase -engine ncbi -name DB_bw EC_Final_genome.fasta
 /home/Softwares/RepeatModeler/RepeatModeler -database DB_bw -engine ncbi -pa 18 -LTRStruct -ltr_retriever_dir /home/Softwares/LTR_retriever/ -ninja_dir /home/Softwares/NINJA-0.95-cluster_only/NINJA -mafft_dir /home/anaconda3/bin/
 /home/abhisek/RepeatMasker/RepeatMasker -lib ./consensi_classified_mod_single_annot.fasta BW_Final_genome.fasta -pa 18 -a
 

@@ -51,3 +51,4 @@ pilon -Xmx950G --genome EC_assembly_gapclosed.fasta --bam Pilon_EC_sorted.bam --
 
 #Filtering to keep the contigs >=5 Kb
 perl calc_length_separate.pl Pilon_output_EC.fasta 4999
+mv Pilon_output_EC.fasta.annot Final_EC_assembly.fasta

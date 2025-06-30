@@ -1,1 +1,11 @@
-###################
+###################The following commands are shown for only one sample. We used a total of 6 samples for shotgun metagenome analysis
+###################Data-filtration
+java -jar /home/Softwares/Trimmomatic-0.39/trimmomatic-0.39.jar PE EC_S1_raw_R1.fastq EC_S1_raw_R2.fastq EC_S1_R1.fastq EC_S1_R1_unpaired.fastq EC_S1_R2.fastq EC_S1_R2_unpaired.fastq ILLUMINACLIP:/home/Softwares/Trimmomatic-0.39/adapters/all_trueseq_PE.fa:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:4:20 MINLEN:60 -threads 15
+
+###################Host genome contamination removal
+
+###################Human genome contamination removal
+
+###################Kraken contamination removal
+
+###################Assembly

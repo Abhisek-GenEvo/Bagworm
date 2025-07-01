@@ -1,9 +1,19 @@
-/home/anaconda3/bin/makeblastdb -in Cafe_55species_Annot.fasta -dbtype prot -out cafe_blastdb_test
-/home/anaconda3/bin/blastp -num_threads 150 -db cafe_blastdb_test -query Cafe_55species_Annot.fasta -outfmt 7 -seg yes > blast_output_test.txt
-grep -v "^#" blast_output_test.txt | cut -f 1,2,11 > blast_output_test.abc
-/home/anaconda3/bin/mcxload -abc blast_output_test.abc --stream-mirror --stream-neg-log10 -stream-tf 'ceil(200)' -o blast_output_test.mci -write-tab blast_output_test.tab
-/home/anaconda3/bin/mcl blast_output_test.mci -I 3
-/home/anaconda3/bin/mcxdump -icl out.blast_output_test.mci.I30 -tabr blast_output_test.tab -o dump.blast_output_test.mci.I30
-python /home/Softwares/CAFE/python_scripts/cafetutorial_mcl2rawcafe.py -i dump.blast_output_test.mci.I30 -o unfiltered_cafe_input_bw_I3.txt -sp "Acyrthosiphon#pisum# Aedes#aegypti# Agrilus#planipennis# Anopheles#stephensi# Anoplophora#glabripennis# Aphidius#gifuensis# Apis#mellifera# Athalia#rosae# Atta#cephalotes# Bactrocera#dorsalis# Belgica#antarctica# Bemisia#tabaci# Bombus#impatiens# Bombyx#mori# Ceratitis#capitata# Cimex#lectularius# Copidosoma#floridanum# Cotesia#glomerata# Culex#quinquefasciatus# Culicoides#sonorensis# Danaus#plexippus# Dendroctonus#ponderosae# Diabrotica#virgifera# Diuraphis#noxia# Drosophila#melanogaster# Eumeta1#crameri# eumeta2#variegata# Glossina#palpalis# Heliconius#melpomene# Hermetia#illucens# Leptinotarsa#decemlineata# Lucilia#cuprina# Lutzomyia#longipalpis# Mayetiola#destructor# Megaselia#scalaris# Melitaea#cinxia# Monomorium#pharaonis# Musca#domestica# Nasonia#vitripennis# Onthophagus#taurus# Ooceraea#biroi# Orussus#abietinus# Pediculus#humanus# Phlebotomus#papatasi# Rhagoletis#pomonella# Rhodnius#prolixus# Rhopalosiphum#maidis# Sipha#flava# Solenopsis#invicta# Stomoxys#calcitrans# Teleopsis#dalmanni# Trialeurodes#vaporariorum# Tribolium#castaneum# Trichogramma#pretiosum# Zootermopsis#nevadensis#"
-python /home/abhisek/Softwares/CAFE_old/python_scripts/cafetutorial_clade_and_size_filter.py -i unfiltered_cafe_input_bw_I3.txt -o filtered_cafe_input_bw_I3.txt -s
-/home/vineetks/SOFTWARES/CAFE5/bin/cafe5 -t ultrametric_tree.txt -i filtered_cafe_input_bw_I3.txt -p -y lambdaTree.txt -o cafe5_multiLambda_bw -c 150
+###################All-by-all BLASTP
+/home/anaconda3/bin/makeblastdb -in All_55species.fasta -dbtype prot -out blastdb_for_cafe
+/home/anaconda3/bin/blastp -num_threads 50 -db blastdb_for_cafe -query All_55species.fasta -outfmt 7 -seg yes > blastp_output.txt
+grep -v "^#" blastp_output.txt | cut -f 1,2,11 > blastp_output.abc
+
+###################Clustering sequences with MCL
+/home/anaconda3/bin/mcxload -abc blastp_output.abc --stream-mirror --stream-neg-log10 -stream-tf 'ceil(200)' -o blastp_output.mci -write-tab blastp_output.tab
+/home/anaconda3/bin/mcl blastp_output.mci -I 3
+/home/anaconda3/bin/mcxdump -icl out.blastp_output.mci.I30 -tabr blastp_output.tab -o dump.blastp_output.mci.I30
+
+###################Parsing of MCL's output
+python /home/Softwares/CAFE/python_scripts/cafetutorial_mcl2rawcafe.py -i dump.blastp_output.mci.I30 -o unfiltered_cafe_input.txt -sp "Acyrthosiphon#pisum# Aedes#aegypti# Agrilus#planipennis# Anopheles#stephensi# Anoplophora#glabripennis# Aphidius#gifuensis# Apis#mellifera# Athalia#rosae# Atta#cephalotes# Bactrocera#dorsalis# Belgica#antarctica# Bemisia#tabaci# Bombus#impatiens# Bombyx#mori# Ceratitis#capitata# Cimex#lectularius# Copidosoma#floridanum# Cotesia#glomerata# Culex#quinquefasciatus# Culicoides#sonorensis# Danaus#plexippus# Dendroctonus#ponderosae# Diabrotica#virgifera# Diuraphis#noxia# Drosophila#melanogaster# Eumeta1#crameri# eumeta2#variegata# Glossina#palpalis# Heliconius#melpomene# Hermetia#illucens# Leptinotarsa#decemlineata# Lucilia#cuprina# Lutzomyia#longipalpis# Mayetiola#destructor# Megaselia#scalaris# Melitaea#cinxia# Monomorium#pharaonis# Musca#domestica# Nasonia#vitripennis# Onthophagus#taurus# Ooceraea#biroi# Orussus#abietinus# Pediculus#humanus# Phlebotomus#papatasi# Rhagoletis#pomonella# Rhodnius#prolixus# Rhopalosiphum#maidis# Sipha#flava# Solenopsis#invicta# Stomoxys#calcitrans# Teleopsis#dalmanni# Trialeurodes#vaporariorum# Tribolium#castaneum# Trichogramma#pretiosum# Zootermopsis#nevadensis#"
+python /home/Softwares/CAFE_old/python_scripts/cafetutorial_clade_and_size_filter.py -i unfiltered_cafe_input.txt -o filtered_cafe_input.txt -s
+
+###################Constructing an ultrametric species tree
+Species tree that was constructed in the Species phylogenetic tree step was converted into an ultrametric tree 
+
+###################Running CAFE
+/home/Softwares/CAFE5/bin/cafe5 -t ultrametric_tree.txt -i filtered_cafe_input.txt -p -y lambdaTree.txt -o cafe5_multiLambda_output -c 50

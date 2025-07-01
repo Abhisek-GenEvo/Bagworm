@@ -13,7 +13,7 @@ python /home/Softwares/CAFE/python_scripts/cafetutorial_mcl2rawcafe.py -i dump.b
 python /home/Softwares/CAFE_old/python_scripts/cafetutorial_clade_and_size_filter.py -i unfiltered_cafe_input.txt -o filtered_cafe_input.txt -s
 
 ###################Constructing an ultrametric species tree
-Species tree that was constructed in the Species phylogenetic tree step was converted into an ultrametric tree 
+Species tree that was constructed in the "Species_Phylogenetic_Tree_Construction" step was converted into an ultrametric tree 
 
 ###################Running CAFE
 /home/Softwares/CAFE5/bin/cafe5 -t ultrametric_tree.txt -i filtered_cafe_input.txt -p -y lambdaTree.txt -o cafe5_multiLambda_output -c 50

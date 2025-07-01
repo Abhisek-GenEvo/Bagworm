@@ -1,11 +1,9 @@
-#Data filtering
-java -jar /home/Softwares/Trimmomatic-0.39/trimmomatic-0.39.jar PE WB_R1.fastq WB_R2.fastq wbT_R1_paired.fastq wbT_R1_unpaired.fastq wbT_R2_paired.fastq wbT_R2_unpaired.fastq ILLUMINACLIP:/home/Softwares/Trimmomatic-0.39/adapters/all_trueseq_PE.fa:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:4:20 MINLEN:60 -threads 15
-
-#Assembly and statistics
-/home/Softwares/trinityrnaseq-v2.14.0/Trinity --seqType fq --left wbT_R1_paired.fastq,wbT_R1_unpaired.fastq --right wbT_R2_paired.fastq,wbT_R2_unpaired.fastq --CPU 44 --max_memory 250G --output BW_Trinity_Assembly
-/home/Softwares/trinityrnaseq-v2.14.0/util/TrinityStats.pl Trinity.fasta
-
-#Gene expression analysis
-export PATH=/home/anaconda3/bin:$PATH
-kallisto index -i EC_cds.idx Eumeta_crameri_final_transcripts.fasta
-kallisto quant -i EC_cds.idx -o EC_output_kallisto --plaintext wbT_R1_paired.fastq wbT_R2_paired.fastq -t 18
+/home/anaconda3/bin/makeblastdb -in Cafe_55species_Annot.fasta -dbtype prot -out cafe_blastdb_test
+/home/anaconda3/bin/blastp -num_threads 150 -db cafe_blastdb_test -query Cafe_55species_Annot.fasta -outfmt 7 -seg yes > blast_output_test.txt
+grep -v "^#" blast_output_test.txt | cut -f 1,2,11 > blast_output_test.abc
+/home/anaconda3/bin/mcxload -abc blast_output_test.abc --stream-mirror --stream-neg-log10 -stream-tf 'ceil(200)' -o blast_output_test.mci -write-tab blast_output_test.tab
+/home/anaconda3/bin/mcl blast_output_test.mci -I 3
+/home/anaconda3/bin/mcxdump -icl out.blast_output_test.mci.I30 -tabr blast_output_test.tab -o dump.blast_output_test.mci.I30
+python /home/Softwares/CAFE/python_scripts/cafetutorial_mcl2rawcafe.py -i dump.blast_output_test.mci.I30 -o unfiltered_cafe_input_bw_I3.txt -sp "Acyrthosiphon#pisum# Aedes#aegypti# Agrilus#planipennis# Anopheles#stephensi# Anoplophora#glabripennis# Aphidius#gifuensis# Apis#mellifera# Athalia#rosae# Atta#cephalotes# Bactrocera#dorsalis# Belgica#antarctica# Bemisia#tabaci# Bombus#impatiens# Bombyx#mori# Ceratitis#capitata# Cimex#lectularius# Copidosoma#floridanum# Cotesia#glomerata# Culex#quinquefasciatus# Culicoides#sonorensis# Danaus#plexippus# Dendroctonus#ponderosae# Diabrotica#virgifera# Diuraphis#noxia# Drosophila#melanogaster# Eumeta1#crameri# eumeta2#variegata# Glossina#palpalis# Heliconius#melpomene# Hermetia#illucens# Leptinotarsa#decemlineata# Lucilia#cuprina# Lutzomyia#longipalpis# Mayetiola#destructor# Megaselia#scalaris# Melitaea#cinxia# Monomorium#pharaonis# Musca#domestica# Nasonia#vitripennis# Onthophagus#taurus# Ooceraea#biroi# Orussus#abietinus# Pediculus#humanus# Phlebotomus#papatasi# Rhagoletis#pomonella# Rhodnius#prolixus# Rhopalosiphum#maidis# Sipha#flava# Solenopsis#invicta# Stomoxys#calcitrans# Teleopsis#dalmanni# Trialeurodes#vaporariorum# Tribolium#castaneum# Trichogramma#pretiosum# Zootermopsis#nevadensis#"
+python /home/abhisek/Softwares/CAFE_old/python_scripts/cafetutorial_clade_and_size_filter.py -i unfiltered_cafe_input_bw_I3.txt -o filtered_cafe_input_bw_I3.txt -s
+/home/vineetks/SOFTWARES/CAFE5/bin/cafe5 -t ultrametric_tree.txt -i filtered_cafe_input_bw_I3.txt -p -y lambdaTree.txt -o cafe5_multiLambda_bw -c 150

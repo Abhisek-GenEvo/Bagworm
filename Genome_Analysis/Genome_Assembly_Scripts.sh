@@ -85,6 +85,6 @@ blobtools create -i Final_EC_assembly.fasta -b mapping_output_sorted.bam -t EC_b
 blobtools view -i BlobTools_EC.blobDB.json
 blobtools plot -i BlobTools_EC.blobDB.json
 
-###################Constructing a pseudochromosome-level genome assembly via genome-wide synteny alignment with Pachythelia villosella genome assembly (GenBank - GCA_964291025.1)
+###################Constructing a pseudochromosome-level genome assembly via genome-wide synteny alignment with Luffia ferchaultella genome assembly (GenBank - GCA_949709985.1)
 export SATSUMA2_PATH=/home/vinit/SOFTWARES/satsuma2/bin/
-Chromosemble -q BW_Final_CLEAN_genome.fasta -t PacVill_nuclear_genome.fasta -o BW_pseudochromosomes -n 60
+Chromosemble -q BW_Final_CLEAN_genome.fasta -t LufFer_nuclear_genome.fasta -o BW_pseudochromosomes -n 60

@@ -1,5 +1,5 @@
 ###################This code was used to assemble the mitochondrial genome
 
-/home/anaconda3/bin/get_organelle_from_reads.py -1 BW_R1_paired.fastq -2 BW_R2_paired.fastq -R 10 -k 21,45,65,85,105 -F animal_mt -o EC_mt_out -t 50
+/home/anaconda3/bin/get_organelle_from_reads.py -1 EC_illumina_R1.fastq -2 EC_illumina_R2.fastq -R 10 -k 21,45,65,85,105 -F animal_mt -o EC_mt_out -t 50
 
 ###################The circular mitochondrial genome was annotated using GeSeq in CHLOROBOX

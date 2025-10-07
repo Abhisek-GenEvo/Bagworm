@@ -2,7 +2,7 @@
 
 /home/Softwares/RepeatModeler/BuildDatabase -engine ncbi -name DB_EC Final_EC_assembly.fasta
 /home/Softwares/RepeatModeler/RepeatModeler -database DB_EC -engine ncbi -pa 20 -LTRStruct -ltr_retriever_dir /home/Softwares/LTR_retriever/ -ninja_dir /home/Softwares/NINJA-0.95-cluster_only/NINJA -mafft_dir /home/anaconda3/bin/
-/home/abhisek/RepeatMasker/RepeatMasker -lib ./consensi_classified.fasta Final_EC_assembly.fasta -pa 20 -a
+/home/abhisek/RepeatMasker/RepeatMasker -pa 20 -a -xsmall -norna -gff -lib ./consensi_classified.fasta Final_EC_assembly.fasta 
 
 ###################Coding gene prediction using MAKER
 

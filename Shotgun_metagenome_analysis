@@ -3,13 +3,14 @@
 java -jar /home/Softwares/Trimmomatic-0.39/trimmomatic-0.39.jar PE EC_S1_raw_R1.fastq EC_S1_raw_R2.fastq EC_S1_R1.fastq EC_S1_R1_unpaired.fastq EC_S1_R2.fastq EC_S1_R2_unpaired.fastq ILLUMINACLIP:/home/Softwares/Trimmomatic-0.39/adapters/all_trueseq_PE.fa:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:4:20 MINLEN:60 -threads 15
 
 ###################Host genome contamination removal
-bmtool -d reference.fa -o reference.bitmask -A 0 -w 18
-srprism mkindex -i reference.fa -o reference.srprism -M 7168
-makeblastdb -in reference.fa -dbtype nucl
-bmtagger.sh -b reference.bitmask -x reference.srprism -q 0 -1 bw_S10_R1_paired_single.fasta -2 bw_S10_R2_paired_single.fasta -o S10_bw_contm -T tmp
-bmtagger.sh -b reference.bitmask -x reference.srprism -q 0 -1 bw_S10_unpaired_single.fasta -o S10_unpaired_bw_contm -T tmp
-perl Script_hgremoval.pl S10_bw_contm bw_S10_R1_paired_single.fasta bw_S10_R2_paired_single.fasta
-perl Script_hgremoval.pl S10_unpaired_bw_contm bw_S10_unpaired_single.fasta
+
+bmtool -d BW_Final_CLEAN_genome.fasta -o BW_Final_CLEAN_genome.bitmask -A 0 -w 18
+srprism mkindex -i BW_Final_CLEAN_genome.fasta -o BW_Final_CLEAN_genome.srprism -M 7168
+makeblastdb -in BW_Final_CLEAN_genome.fasta -dbtype nucl
+bmtagger.sh -b BW_Final_CLEAN_genome.bitmask -x BW_Final_CLEAN_genome.srprism -q 0 -1 S10_R1_paired.fasta -2 S10_R2_paired.fasta -o S10_paired_contamination -T tmp
+bmtagger.sh -b BW_Final_CLEAN_genome.bitmask -x BW_Final_CLEAN_genome.srprism -q 0 -1 S10_unpaired.fasta -o S10_unpaired_contamination -T tmp
+perl Script_hgremoval.pl S10_paired_contamination S10_R1_paired.fasta S10_R2_paired.fasta
+perl Script_hgremoval.pl S10_unpaired_contamination S10_unpaired.fasta
 
 ###################Human genome contamination removal
 

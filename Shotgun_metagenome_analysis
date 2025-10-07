@@ -7,12 +7,20 @@ java -jar /home/Softwares/Trimmomatic-0.39/trimmomatic-0.39.jar PE EC_S1_raw_R1.
 bmtool -d BW_Final_CLEAN_genome.fasta -o BW_Final_CLEAN_genome.bitmask -A 0 -w 18
 srprism mkindex -i BW_Final_CLEAN_genome.fasta -o BW_Final_CLEAN_genome.srprism -M 7168
 makeblastdb -in BW_Final_CLEAN_genome.fasta -dbtype nucl
-bmtagger.sh -b BW_Final_CLEAN_genome.bitmask -x BW_Final_CLEAN_genome.srprism -q 0 -1 S10_R1_paired.fasta -2 S10_R2_paired.fasta -o S10_paired_contamination -T tmp
+bmtagger.sh -b BW_Final_CLEAN_genome.bitmask -x BW_Final_CLEAN_genome.srprism -q 0 -1 S10_R1.fasta -2 S10_R2.fasta -o S10_paired_contamination -T tmp
 bmtagger.sh -b BW_Final_CLEAN_genome.bitmask -x BW_Final_CLEAN_genome.srprism -q 0 -1 S10_unpaired.fasta -o S10_unpaired_contamination -T tmp
-perl Script_hgremoval.pl S10_paired_contamination S10_R1_paired.fasta S10_R2_paired.fasta
+perl Script_hgremoval.pl S10_paired_contamination S10_R1.fasta S10_R2.fasta
 perl Script_hgremoval.pl S10_unpaired_contamination S10_unpaired.fasta
 
 ###################Human genome contamination removal
+
+bmtool -d Human_genome.fasta -o Human_genome.bitmask -A 0 -w 18
+srprism mkindex -i Human_genome.fasta -o Human_genome.srprism -M 7168
+makeblastdb -in Human_genome.fasta -dbtype nucl
+bmtagger.sh -b Human_genome.bitmask -x Human_genome.srprism -q 0 -1 S10_clean_R1.fasta -2 S10_clean_R2.fasta -o S10_paired_Human_contamination -T tmp
+bmtagger.sh -b Human_genome.bitmask -x Human_genome.srprism -q 0 -1 S10_clean_unpaired.fasta -o S10_unpaired_Human_contamination -T tmp
+perl Script_hgremoval.pl S10_paired_Human_contamination S10_clean_R1.fasta S10_clean_R2.fasta
+perl Script_hgremoval.pl S10_unpaired_Human_contamination S10_unpaired.fasta
 
 ###################Kraken contamination removal
 

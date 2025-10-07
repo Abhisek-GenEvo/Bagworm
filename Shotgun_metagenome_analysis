@@ -2,7 +2,7 @@
 ###################Data-filtration
 java -jar /home/Softwares/Trimmomatic-0.39/trimmomatic-0.39.jar PE EC_S1_raw_R1.fastq EC_S1_raw_R2.fastq EC_S1_R1.fastq EC_S1_R1_unpaired.fastq EC_S1_R2.fastq EC_S1_R2_unpaired.fastq ILLUMINACLIP:/home/Softwares/Trimmomatic-0.39/adapters/all_trueseq_PE.fa:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:4:20 MINLEN:60 -threads 15
 
-###################Host genome contamination removal
+###################Host genome contamination removal (Using BMTagger)
 
 bmtool -d BW_Final_CLEAN_genome.fasta -o BW_Final_CLEAN_genome.bitmask -A 0 -w 18
 srprism mkindex -i BW_Final_CLEAN_genome.fasta -o BW_Final_CLEAN_genome.srprism -M 7168
@@ -12,7 +12,7 @@ bmtagger.sh -b BW_Final_CLEAN_genome.bitmask -x BW_Final_CLEAN_genome.srprism -q
 perl Script_hgremoval.pl S10_paired_contamination S10_R1.fasta S10_R2.fasta
 perl Script_hgremoval.pl S10_unpaired_contamination S10_unpaired.fasta
 
-###################Human genome contamination removal
+###################Human genome contamination removal (Using BMTagger)
 
 bmtool -d Human_genome.fasta -o Human_genome.bitmask -A 0 -w 18
 srprism mkindex -i Human_genome.fasta -o Human_genome.srprism -M 7168
@@ -22,6 +22,7 @@ bmtagger.sh -b Human_genome.bitmask -x Human_genome.srprism -q 0 -1 S10_clean_un
 perl Script_hgremoval.pl S10_paired_Human_contamination S10_clean_R1.fasta S10_clean_R2.fasta
 perl Script_hgremoval.pl S10_unpaired_Human_contamination S10_unpaired.fasta
 
-###################Kraken contamination removal
+###################Further contamination removal by Kraken
 
-###################Assembly
+
+###################Assembly (using metaSPAdes)

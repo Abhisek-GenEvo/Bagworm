@@ -14,17 +14,22 @@ gff_merge
 /home/Softwares/maker/bin/gff3_merge -d ./EC_genome.maker.output/EC_genome_master_datastore_index.log
 
 #Filtering the gene set
+
+Based on Annotation Edit Distance (AED) < 0.5:
 grep ">" EC_transcripts.fasta | sed 's/ /\t/g' | sed 's/AED://g' > EC_transcripts_ids.txt
 awk -F'\t' '{if ($4 < 0.50 ) {print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"}}' EC_transcripts_ids.txt | cut -f1 > selected_AED_EC_ids.txt
 parallel -j20 'grep --no-group-separator -A1 -wFf {} EC_transcripts.fasta > {/.}.faa' ::: selected_AED_EC_ids.txt
+
+Based on length ≥150 bases:
 perl calc_length_separate.pl selected_AED_EC_ids.faa 149
 mv selected_AED_EC_ids.faa.annot EC_high_confidence_transcripts.fasta
 
 ###################Non-coding gene prediction
+export PATH=/home/anaconda3/bin:$PATH
 #tRNA prediction
-/home/anaconda3/bin/tRNAscan-SE Final_EC_assembly.fasta -o EC_tRNA_result -f EC_secondary -m EC_tRNA_stats --thread 20
+tRNAscan-SE Final_EC_assembly.fasta -o EC_tRNA_result -f EC_secondary -m EC_tRNA_stats --thread 20
 #rRNA prediction
-/home/anaconda3/bin/barrnap Final_EC_assembly.fasta --kingdom euk --quiet --threads 20 --outseq EC_rRNA_Out
-#miRNA identification
+barrnap Final_EC_assembly.fasta --kingdom euk --quiet --threads 20 --outseq EC_rRNA_Out
+#Homology-based miRNA identification (using MirGeneDB database)
 makeblastdb -in Final_EC_assembly.fasta -dbtype nucl
-/home/anaconda3/bin/blastn -query mirGene_precursors.fasta -db Final_EC_assembly.fasta -out mirGeneDB_EC_blastn -evalue 0.000000001 -outfmt 6 -qcov_hsp_perc 90 -perc_identity 90 -num_threads 20
+blastn -query mirGene_precursors.fasta -db Final_EC_assembly.fasta -out mirGeneDB_EC_blastn -evalue 0.000000001 -outfmt 6 -qcov_hsp_perc 90 -perc_identity 90 -num_threads 20

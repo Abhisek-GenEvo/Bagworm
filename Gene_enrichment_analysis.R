@@ -25,3 +25,29 @@ counts[, padj := p.adjust(pvalue, method = "BH")]
 significant <- counts[padj < 0.05]
 significant <- significant[order(-focal)]
 fwrite(significant, "KEGG_enrichment_result.tsv", sep = "\t")
+
+###################Plotting the results
+
+library(data.table)
+library(ggplot2)
+df <- fread("KEGG_enrichment_result.tsv")
+df <- df[padj < 0.01]
+df <- df[order(padj)][1:20]
+df[, neglogpadj := -log10(padj)]
+df[, ko := factor(ko, levels = rev(ko))]
+
+pdf(file = 'Gene_enrichment.pdf', width=10, height=10)
+ggplot(df, aes(x = fold_enrichment, y = ko)) +
+  geom_point(aes(size = focal, color = neglogpadj)) +
+  scale_color_gradient(low = "blue", high = "red") +
+  labs(title = "KEGG Pathway Enrichment",
+       x = "Fold Enrichment",
+       y = "KEGG Pathway",
+       color = "-log10(FDR)",
+       size = "Focal gene count") +
+  theme_gray(base_size = 14) +
+  theme(
+    panel.grid.major = element_blank(),  
+    panel.grid.minor = element_blank()   
+  )
+dev.off()

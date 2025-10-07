@@ -35,14 +35,28 @@ CAT contigs -c S10_contigs_filtered.fasta -d /home/database/CAT_prepare_20190719
 CAT add_names -i S10_CAT_analysis.contig2classification.txt -o S10_addNames_output.txt -t /home/database/CAT_prepare_20190719/2019-07-19_taxonomy/ --only_official
 CAT summarise -c S10_contigs_filtered.fasta -i S10_addNames_output.txt -o S10_summarise_output
 
-###################Gene prediction
-prodigal -i S10_nonEuk_contigs.fasta -a Proteins_S10.faa -d Nucleotides_S10.fna -f gff -o Output_S10 -p meta
+###################Construction of gut microbial gene catalog
+prodigal -i S10_CAT_filtered_contigs.fasta -a Proteins_S10.faa -d Nucleotides_S10.fna -f gff -o Output_S10 -p meta
 Concatenate proteins from all six samples:
 cat Proteins_S10.faa Proteins_S11.faa Proteins_S12.faa Proteins_S13.faa Proteins_S14.faa Proteins_S15.faa > All_proteins.faa
-cd-hit -i All_proteins_6samples_single_annot.faa -o All_proteins_6samples_single_annot_100.faa -c 1.00 -n 5 -M 2800
+cd-hit -i All_proteins.faa -o All_proteins_clustered.faa -c 1.00 -n 5 -M 2800
 
-CAT contigs -c S10_contigs_filtered.fasta -d /home/database/CAT_prepare_20190719/2019-07-19_CAT_database/ -t /home/database/CAT_prepare_20190719/2019-07-19_taxonomy/ -n 30 --out_prefix S10_CAT_analysis
-CAT add_names -i S10_CAT_analysis.contig2classification.txt -o S10_addNames_output.txt -t /home/database/CAT_prepare_20190719/2019-07-19_taxonomy/ --only_official
-CAT summarise -c S10_contigs_filtered.fasta -i S10_addNames_output.txt -o S10_summarise_output
+CAT contigs -c All_proteins_clustered.faa -d /home/database/CAT_prepare_20190719/2019-07-19_CAT_database/ -t /home/database/CAT_prepare_20190719/2019-07-19_taxonomy/ -n 30 --out_prefix GeneSet_CAT_analysis
+CAT add_names -i GeneSet_CAT_analysis.contig2classification.txt -o GeneSet_addNames_output.txt -t /home/database/CAT_prepare_20190719/2019-07-19_taxonomy/ --only_official
+CAT summarise -c All_proteins_clustered.faa -i GeneSet_addNames_output.txt -o GeneSet_summarise_output
+
+###################Gene abundance analysis
+2bwt-builder Gene_catalog.fasta
+for i in *Kraken_clean_R1.fasta; do perl add_index_in_Annotation.pl "$i"; done;
+for i in *Kraken_clean_R2.fasta; do perl add_index_in_Annotation.pl "$i"; done;
+soap -a S10_Kraken_clean_R1.fasta -b S10_Kraken_clean_R2.fasta -D Gene_catalog.fasta.index -o S10_PE_output -2 S10_SE_output -u S10_UM_output -m 100 -x 2000 -p 50 -M 4 -r 1
+perl Quantify_gene_abundance2.pl Gene_catalog.fasta
+cat *.CALCULATED > All_samples_calculated
+R CMD BATCH Gene_abundance_table.R
+perl Gene_proportion.pl Relative_Gene_abundance_table
+
+Note: Quantify_gene_abundance2.pl, Gene_abundance_table.R, and Gene_proportion.pl are in-house scripts.
+
+
 
 

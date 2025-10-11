@@ -13,7 +13,7 @@ mcxdump -icl out.blastp_output.mci.I30 -tabr blastp_output.tab -o dump.blastp_ou
 ###################Parsing of MCL's output
 python /home/Softwares/CAFE/python_scripts/cafetutorial_mcl2rawcafe.py -i dump.blastp_output.mci.I30 -o unfiltered_cafe_input.txt -sp "Acyrthosiphon#pisum# Aedes#aegypti# Agrilus#planipennis# Anopheles#stephensi# Anoplophora#glabripennis# Aphidius#gifuensis# Apis#mellifera# Athalia#rosae# Atta#cephalotes# Bactrocera#dorsalis# Belgica#antarctica# Bemisia#tabaci# Bombus#impatiens# Bombyx#mori# Ceratitis#capitata# Cimex#lectularius# Copidosoma#floridanum# Cotesia#glomerata# Culex#quinquefasciatus# Culicoides#sonorensis# Danaus#plexippus# Dendroctonus#ponderosae# Diabrotica#virgifera# Diuraphis#noxia# Drosophila#melanogaster# Eumeta1#crameri# eumeta2#variegata# Glossina#palpalis# Heliconius#melpomene# Hermetia#illucens# Leptinotarsa#decemlineata# Lucilia#cuprina# Lutzomyia#longipalpis# Mayetiola#destructor# Megaselia#scalaris# Melitaea#cinxia# Monomorium#pharaonis# Musca#domestica# Nasonia#vitripennis# Onthophagus#taurus# Ooceraea#biroi# Orussus#abietinus# Pediculus#humanus# Phlebotomus#papatasi# Rhagoletis#pomonella# Rhodnius#prolixus# Rhopalosiphum#maidis# Sipha#flava# Solenopsis#invicta# Stomoxys#calcitrans# Teleopsis#dalmanni# Trialeurodes#vaporariorum# Tribolium#castaneum# Trichogramma#pretiosum# Zootermopsis#nevadensis#"
 
-To filter the large gene families (containing ≥100 gene copies for ≥1 species): 
+#To filter the large gene families (containing ≥100 gene copies for ≥1 species) 
 python /home/Softwares/CAFE_old/python_scripts/cafetutorial_clade_and_size_filter.py -i unfiltered_cafe_input.txt -o filtered_cafe_input.txt -s
 
 ###################Constructing an ultrametric species tree
@@ -22,5 +22,5 @@ Species tree that was constructed in the "Species_Phylogenetic_Tree_Construction
 ###################Running CAFE
 /home/Softwares/CAFE5/bin/cafe5 -t ultrametric_tree.txt -i filtered_cafe_input.txt -p -y lambdaTree.txt -o cafe5_multiLambda_output -c 50
 
-For the large filtered families:
+#For the large filtered families
 /home/Softwares/CAFE5/bin/cafe5 -t ultrametric_tree.txt -i large_filtered_cafe_input.txt -p -y lambdaTree.txt -l 0.0025918243512664,0.0033740088778517 -o cafe5_large_families -c 50

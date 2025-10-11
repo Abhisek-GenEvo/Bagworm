@@ -6,7 +6,7 @@
 
 ###################Coding gene prediction using MAKER
 
-/home/Softwares/maker/bin/maker -c 40 maker_opts.ctl maker_exe.ctl maker_bopts.ctl maker_evm.ctl -fix_nucleotides -genome Final_EC_assembly.fasta.masked -RM_off -TMP ./tmp
+/home/Softwares/maker/bin/maker -c 40 maker_opts.ctl maker_exe.ctl maker_bopts.ctl maker_evm.ctl -fix_nucleotides -genome Final_EC_assembly_masked.fasta -RM_off -TMP ./tmp
 
 #Extracting the fasta and gff files
 /home/Softwares/maker/bin/fasta_merge -d ./EC_genome.maker.output/EC_genome_master_datastore_index.log

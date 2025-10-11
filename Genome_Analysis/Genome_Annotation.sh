@@ -2,7 +2,7 @@
 
 /home/Softwares/RepeatModeler/BuildDatabase -engine ncbi -name DB_EC Final_EC_assembly.fasta
 /home/Softwares/RepeatModeler/RepeatModeler -database DB_EC -engine ncbi -pa 20 -LTRStruct -ltr_retriever_dir /home/Softwares/LTR_retriever/ -ninja_dir /home/Softwares/NINJA-0.95-cluster_only/NINJA -mafft_dir /home/anaconda3/bin/
-/home/abhisek/RepeatMasker/RepeatMasker -pa 20 -a -xsmall -norna -gff -lib ./consensi_classified.fasta Final_EC_assembly.fasta 
+/home/Softwares/RepeatMasker/RepeatMasker -pa 20 -a -xsmall -norna -gff -lib ./consensi_classified.fasta Final_EC_assembly.fasta 
 
 ###################Coding gene prediction using MAKER
 
@@ -13,16 +13,16 @@ gff_merge
 /home/Softwares/maker/bin/fasta_merge -d ./EC_genome.maker.output/EC_genome_master_datastore_index.log
 /home/Softwares/maker/bin/gff3_merge -d ./EC_genome.maker.output/EC_genome_master_datastore_index.log
 
-#Filtering the gene set
+###################Filtering the gene set
 
-Based on Annotation Edit Distance (AED) < 0.5:
-grep ">" EC_transcripts.fasta | sed 's/ /\t/g' | sed 's/AED://g' > EC_transcripts_ids.txt
-awk -F'\t' '{if ($4 < 0.50 ) {print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"}}' EC_transcripts_ids.txt | cut -f1 > selected_AED_EC_ids.txt
-parallel -j20 'grep --no-group-separator -A1 -wFf {} EC_transcripts.fasta > {/.}.faa' ::: selected_AED_EC_ids.txt
+#Based on Annotation Edit Distance (AED) < 0.5
+grep ">" EC_genes.fasta | sed 's/ /\t/g' | sed 's/AED://g' > EC_genes_ids.txt
+awk -F'\t' '{if ($4 < 0.50 ) {print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"}}' EC_genes_ids.txt | cut -f1 > selected_AED_EC_genes.txt
+parallel -j20 'grep --no-group-separator -A1 -wFf {} EC_genes.fasta > {/.}.faa' ::: selected_AED_EC_genes.txt
 
-Based on length ≥150 bases:
-perl calc_length_separate.pl selected_AED_EC_ids.faa 149
-mv selected_AED_EC_ids.faa.annot EC_high_confidence_transcripts.fasta
+#Based on length ≥150 bases
+perl calc_length_separate.pl selected_AED_EC_genes.faa 149
+mv selected_AED_EC_genes_filtered.faa EC_high_confidence_genes.fasta
 
 ###################Non-coding gene prediction
 export PATH=/home/anaconda3/bin:$PATH

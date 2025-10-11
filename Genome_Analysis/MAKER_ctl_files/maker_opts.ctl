@@ -1,5 +1,5 @@
 #-----Genome (these are always required)
-genome= #genome sequence (fasta file or fasta embeded in GFF3 file)
+genome=Final_EC_assembly_masked.fasta #genome sequence (fasta file or fasta embeded in GFF3 file)
 organism_type=eukaryotic #eukaryotic or prokaryotic. Default is eukaryotic
 
 #-----Re-annotation Using MAKER Derived GFF3
@@ -13,13 +13,13 @@ pred_pass=0 #use ab-initio predictions in maker_gff: 1 = yes, 0 = no
 other_pass=0 #passthrough anyything else in maker_gff: 1 = yes, 0 = no
 
 #-----EST Evidence (for best results provide a file for at least one)
-est=/mnt/HDD1/HDD2/abhisek_BW/maker_both_Eumeta/maker_crameri_gene_prediction/BW_Trinity.fasta #set of ESTs or assembled mRNA-seq in fasta format
+est=Trinity.fasta #set of ESTs or assembled mRNA-seq in fasta format
 altest= #EST/cDNA sequence file in fasta format from an alternate organism
 est_gff= #aligned ESTs or mRNA-seq from an external GFF3 file
 altest_gff= #aligned ESTs from a closly relate species in GFF3 format
 
 #-----Protein Homology Evidence (for best results provide a file for at least one)
-protein=/mnt/HDD1/HDD2/abhisek_BW/maker_both_Eumeta/maker_crameri_gene_prediction/Lepidoptera_ensembl_single.fasta  #protein sequence file in fasta format (i.e. from mutiple organisms)
+protein=Lepidoptera_ENSEMBL.fasta  #protein sequence file in fasta format (i.e. from mutiple organisms)
 protein_gff=  #aligned protein homology evidence from an external GFF3 file
 
 #-----Repeat Masking (leave values blank to skip repeat masking)
@@ -51,7 +51,7 @@ other_gff= #extra features to pass-through to final MAKER generated GFF3 file
 
 #-----External Application Behavior Options
 alt_peptide=C #amino acid used to replace non-standard amino acids in BLAST databases
-cpus=46 #max number of cpus to use in BLAST and RepeatMasker (not for MPI, leave 1 when using MPI)
+cpus=40 #max number of cpus to use in BLAST and RepeatMasker (not for MPI, leave 1 when using MPI)
 
 #-----MAKER Behavior Options
 max_dna_len=100000 #length for dividing up contigs into chunks (increases/decreases memory usage)
@@ -75,4 +75,4 @@ correct_est_fusion=0 #limits use of ESTs in annotation to avoid fusion genes
 tries=2 #number of times to try a contig if there is a failure for some reason
 clean_try=0 #remove all data from previous run before retrying, 1 = yes, 0 = no
 clean_up=0 #removes theVoid directory with individual analysis files, 1 = yes, 0 = no
-TMP=/mnt/HDD1/HDD2/abhisek_BW/maker_both_Eumeta/maker_crameri_gene_prediction/tmp/ #specify a directory other than the system default temporary directory for temporary files
+TMP=tmp #specify a directory other than the system default temporary directory for temporary files

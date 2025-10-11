@@ -3,9 +3,9 @@ orthofinder -f ./input_files_dir/ -S diamond -t 40 -a 40
 
 ###################Extraction of the fuzzy one-to-one orthogroups
 python2.7 /home/Softwares/kinfin/src/kinfin.py -p SpeciesIDs.txt -g Orthogroups.txt -c config_working.txt -o kinfin_EC_phylogeny -s SequenceIDs.txt -a ./fasta_files
-Fuzzy one-to-one orthogroup IDs were extracted from the output file - all.all.cluster_1to1s.txt 
+#Fuzzy one-to-one orthogroup IDs were extracted from the output file - all.all.cluster_1to1s.txt 
 python2.7 /home/Softwares/kinfin/scripts/get_protein_ids_from_cluster.py -g Orthogroups.txt --cluster_ids 1to1_55speciesIDs.txt
-python pick_longest_ortholog.py (Custom script)
+python pick_longest_ortholog.py 
 for i in ./138_Longest_Orthogroups/*; do cut -d"#" -f1,2 "$i" > "$i".fasta; done;
 
 ###################Orthogroups alignment

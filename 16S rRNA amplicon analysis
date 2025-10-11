@@ -5,7 +5,7 @@ java -jar /home/Softwares/Trimmomatic-0.39/trimmomatic-0.39.jar PE EC_S1_R1.fast
 conda activate qiime2-2021.4
 
 qiime tools import --type 'SampleData[PairedEndSequencesWithQuality]' --input-path Manifest.csv --output-path paired-end-demux.qza --input-format PairedEndFastqManifestPhred33
-("Manifest.csv" file contains the sample IDs and the location of the filtered reads)
+#Manifest.csv file contains the sample IDs and the location of the filtered reads
 qiime demux summarize --i-data paired-end-demux.qza --o-visualization paired-end-demux.qzv
 
 qiime dada2 denoise-paired --verbose --i-demultiplexed-seqs paired-end-demux.qza --p-trim-left-f 0 --p-trim-left-r 0 --p-trunc-len-f 240  --p-trunc-len-r 200 --o-table table.qza --o-representative-sequences rep

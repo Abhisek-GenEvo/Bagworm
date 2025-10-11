@@ -1,8 +1,8 @@
 ###################10X Genomics data assembly
-supernova run --id=EC_assembly_output --sample=EC1,ec2,Ec3 --fastqs=EC_input1,EC_input2,EC_input3 --maxreads=all --localcores=40 --localmem=980 --nodebugmem --accept-extreme-coverage
+supernova run --id=EC_assembly_output --sample=EC1,ec2,Ec3 --fastqs=EC_input1,EC_input2,EC_input3 --maxreads=all --localcores=40 --localmem=800 --nodebugmem --accept-extreme-coverage
 supernova mkoutput --style=pseudohap2 --asmdir=EC_assembly_output/outs/assembly --outprefix=pseudo2_output_EC --minsize=0 --index
 #Processing of the barcoded reads for downstream usage
-longranger basic --id=longranger_out_EC --fastqs=EC_input1,EC_input2,EC_input3 --sample=EC1,ec2,Ec3 --localcores=36 --localmem=500
+longranger basic --id=longranger_out_EC --fastqs=EC_input1,EC_input2,EC_input3 --sample=EC1,ec2,Ec3 --localcores=40 --localmem=800
 #Correction of the mis-assembly regions using Tigmint
 samtools faidx pseudo2_output_EC.fasta
 bwa index pseudo2_output_EC.fasta
@@ -34,7 +34,8 @@ python2.7 /home/Softwares/AGOUTI/agouti.py scaffold -assembly EC_scaffolded_10x.
 
 ###################Gap-closing
 GapCloser -b config.txt -a Quickmerge_merged.fasta -l 155 -t 40 -o EC_assembly_gapclosed.fasta
-config.txt file format:
+##config.txt file format
+-----
 #maximal read length
 max_rd_len=155
 [LIB]
@@ -49,6 +50,7 @@ rd_len_cutoff=150
 q1=EC_illumina_R1.fastq
 q2=EC_illumina_R2.fastq
 q=EC_illumina_unpaired.fastq
+-----
 
 ###################Polishing 
 bwa index EC_assembly_gapclosed.fasta

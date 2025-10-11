@@ -3,7 +3,6 @@
 java -jar /home/Softwares/Trimmomatic-0.39/trimmomatic-0.39.jar PE EC_S1_raw_R1.fastq EC_S1_raw_R2.fastq EC_S1_R1.fastq EC_S1_R1_unpaired.fastq EC_S1_R2.fastq EC_S1_R2_unpaired.fastq ILLUMINACLIP:/home/Softwares/Trimmomatic-0.39/adapters/all_trueseq_PE.fa:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:4:20 MINLEN:60 -threads 15
 
 ###################Host genome contamination removal (Using BMTagger)
-
 bmtool -d BW_Final_CLEAN_genome.fasta -o BW_Final_CLEAN_genome.bitmask -A 0 -w 18
 srprism mkindex -i BW_Final_CLEAN_genome.fasta -o BW_Final_CLEAN_genome.srprism -M 7168
 makeblastdb -in BW_Final_CLEAN_genome.fasta -dbtype nucl
@@ -13,7 +12,6 @@ perl Script_hgremoval.pl S10_paired_contamination S10_R1.fasta S10_R2.fasta
 perl Script_hgremoval.pl S10_unpaired_contamination S10_unpaired.fasta
 
 ###################Human genome contamination removal (Using BMTagger)
-
 bmtool -d Human_genome.fasta -o Human_genome.bitmask -A 0 -w 18
 srprism mkindex -i Human_genome.fasta -o Human_genome.srprism -M 7168
 makeblastdb -in Human_genome.fasta -dbtype nucl
@@ -23,21 +21,24 @@ perl Script_hgremoval.pl S10_paired_Human_contamination S10_clean_R1.fasta S10_c
 perl Script_hgremoval.pl S10_unpaired_Human_contamination S10_unpaired.fasta
 
 ###################Further contamination removal by Kraken
-For paired-end reads: kraken2 --db /home/Softwares/kraken2_database/ --threads 30 --paired --classified-out classified_S10#.fasta S10_BMTagger_clean_R1.fasta S10_BMTagger_clean_R2.fasta --output S10_Kraken_OUT --report S10_Kraken_paired_Report
-For unpaired reads: kraken2 --db /home/Softwares/kraken2_database/  --threads 30 --classified-out classified_S10_unpaired.fasta S10_BMTagger_clean_unpaired.fasta --output S10_KR_revised_unpaired_OUT --report S10_Kraken_unpaired_Report
+#For paired-end reads 
+kraken2 --db /home/Softwares/kraken2_database/ --threads 30 --paired --classified-out classified_S10#.fasta S10_BMTagger_clean_R1.fasta S10_BMTagger_clean_R2.fasta --output S10_Kraken_OUT --report S10_Kraken_paired_Report
+#For unpaired reads 
+kraken2 --db /home/Softwares/kraken2_database/  --threads 30 --classified-out classified_S10_unpaired.fasta S10_BMTagger_clean_unpaired.fasta --output S10_KR_revised_unpaired_OUT --report S10_Kraken_unpaired_Report
 
 ###################Assembly (using metaSPAdes)
 metaspades.py --only-assembler -1 S10_Kraken_clean_R1.fasta -2 S10_Kraken_clean_R2.fasta -s S10_Kraken_clean_unpaired.fasta -t 30 -m 480 -o S10_metaSPAdes_output
-To retain the contigs with length ≥300 bp --- perl calc_length_separate.pl S10_contigs.fasta 299
+#To retain the contigs with length ≥300 bp
+perl calc_length_separate.pl S10_contigs.fasta 299
 
-Taxonomic assignment of contigs to remove the contamination:
+#Taxonomic assignment of contigs to remove the contamination
 CAT contigs -c S10_contigs_filtered.fasta -d /home/database/CAT_prepare_20190719/2019-07-19_CAT_database/ -t /home/database/CAT_prepare_20190719/2019-07-19_taxonomy/ -n 30 --out_prefix S10_CAT_analysis
 CAT add_names -i S10_CAT_analysis.contig2classification.txt -o S10_addNames_output.txt -t /home/database/CAT_prepare_20190719/2019-07-19_taxonomy/ --only_official
 CAT summarise -c S10_contigs_filtered.fasta -i S10_addNames_output.txt -o S10_summarise_output
 
 ###################Construction of gut microbial gene catalog
 prodigal -i S10_CAT_filtered_contigs.fasta -a Proteins_S10.faa -d Nucleotides_S10.fna -f gff -o Output_S10 -p meta
-Concatenate proteins from all six samples:
+#Concatenate proteins from all six samples
 cat Proteins_S10.faa Proteins_S11.faa Proteins_S12.faa Proteins_S13.faa Proteins_S14.faa Proteins_S15.faa > All_proteins.faa
 cd-hit -i All_proteins.faa -o All_proteins_clustered.faa -c 1.00 -n 5 -M 2800
 
@@ -55,7 +56,7 @@ cat *.CALCULATED > All_samples_calculated
 R CMD BATCH Gene_abundance_table.R
 perl Gene_proportion.pl Relative_Gene_abundance_table
 
-Note: Quantify_gene_abundance2.pl, Gene_abundance_table.R, and Gene_proportion.pl are in-house scripts.
+#Note: Quantify_gene_abundance2.pl, Gene_abundance_table.R, and Gene_proportion.pl are in-house scripts.
 
 
 
